@@ -23,6 +23,7 @@ import static com.craftinginterpreters.lox.TokenType.RIGHT_PAREN;
 import static com.craftinginterpreters.lox.TokenType.SEMICOLON;
 import static com.craftinginterpreters.lox.TokenType.SLASH;
 import static com.craftinginterpreters.lox.TokenType.STAR;
+import static com.craftinginterpreters.lox.TokenType.STRING;
 
 class Scanner {
     private final String source;
@@ -79,6 +80,19 @@ class Scanner {
                 } else {
                     addToken(SLASH);
                 }
+                break;
+            }
+            case ' ', '\r', '\t' -> {
+                // Ignore whitespace
+                break;
+            }
+            case '\n' -> {
+                line++;
+                break;
+            }
+            case '"' -> {
+                string();
+                break;
             }
             default -> Lox.error(line, "unexpected character");
         }
@@ -118,5 +132,26 @@ class Scanner {
         return source.charAt(current);
     }
 
+    // Consume characters until hit the end of the string.
+    private void string() {
+        final char nextChar = peek();
+        while (nextChar != '"' && !isAtEnd()) {
+            if (nextChar == '\n' ) {
+                line++;
+            }
+            advance();
+        }
 
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated string");
+            return;
+        }
+
+        // String is closed with '"'.
+        advance();
+
+        // Trim the quotes.
+        String value = source.substring(start + 1, current - 1);
+        addToken(STRING, value);;
+    }
 }
