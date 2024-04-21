@@ -107,9 +107,8 @@ class Scanner {
 
     // Consume characters until hit the end of the string.
     private void string() {
-        final char nextChar = peek();
-        while (nextChar != '"' && !isAtEnd()) {
-            if (nextChar == '\n' ) {
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n' ) {
                 line++;
             }
             advance();
