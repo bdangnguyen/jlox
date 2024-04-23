@@ -78,7 +78,7 @@ class Scanner {
 
     /**
      * Scan source file and returns a list of tokens. Advances character by character until a token is matched.
-     * @return
+     * @return A list of tokens to be parsed
      */
     List<Token> scanTokens() {
         while (!isAtEnd()) {
@@ -90,10 +90,12 @@ class Scanner {
         return tokens;
     }
 
+    // Returns if is at EOF.
     private boolean isAtEnd() {
         return current >= source.length();
     }
 
+    // Read in the current character and match against known tokens.
     private void scanToken() {
         final char c = advance();
         switch (c) {
@@ -112,13 +114,7 @@ class Scanner {
             case '<' -> addToken(match('=') ? LESS_EQUAL : LESS);
             case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
             case '/' -> {
-                if (match('/')) {
-                    while(peek() != '\n' && !isAtEnd()) {
-                        advance();
-                    }
-                } else {
-                    addToken(SLASH);
-                }
+                comment();
                 break;
             }
             case ' ', '\r', '\t' -> {
@@ -146,7 +142,35 @@ class Scanner {
         }
     }
 
-    // Consume characters until hit the end of the string.
+    // Scan comments.
+    private void comment() {
+        if (match('/')) {
+            // Single line comment. Scan until EOL or EOF.
+            while(peek() != '\n' && !isAtEnd()) {
+                advance();
+            }
+        } else if (match('*')) {
+            // Multi line comment. Scan until match '*/'
+            while(!isEndOfBlockComment() && !isAtEnd()) {
+                // Handle new line inside block comment.
+                if (peek() == '\n') {
+                    line++;
+                }
+                advance();
+            }
+
+            advance();
+        } else {
+            addToken(SLASH);
+        }
+    }
+
+    // If we read in * then it is expected to be */ to be end of block comment.
+    private boolean isEndOfBlockComment() {
+        return match('*') && peek() == '/';
+    }
+
+    // Scan a string. Keep consuming characters until end of string is hit.
     private void string() {
         while (peek() != '"' && !isAtEnd()) {
             if (peek() == '\n' ) {
@@ -187,6 +211,7 @@ class Scanner {
         addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
 
+    // Scan either a user identifier or keyword.
     private void identifier() {
         while (isAlphaNumeric(peek())) {
             advance();
@@ -197,6 +222,7 @@ class Scanner {
         addToken(type);
     }
 
+    // Match string aginst keywords otherwise return user identifier.
     private TokenType findIdentifierType(final String text) {
         final TokenType type = keywords.get(text);
         if (type == null) {
@@ -219,6 +245,7 @@ class Scanner {
         tokens.add(new Token(tokenType, text, literal, line));
     }
 
+    // Conditional advance. If scan matches the expected character, return true and advance. Otherwise, false.
     private boolean match(final char expected) {
         if (isAtEnd()) {
             return false;
@@ -232,6 +259,7 @@ class Scanner {
         return true;
     } 
 
+    // Returns character at current position of the scan.
     private char peek() {
         if (isAtEnd()) {
             return '\0';
@@ -240,6 +268,7 @@ class Scanner {
         return source.charAt(current);
     }
 
+    // Returns next character from current position of the scan.
     private char peekNext() {
         if (current + 1 >= source.length()) {
             return '\0';

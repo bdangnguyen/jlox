@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 public class ScannerTest {
     private static final String EMPTY_SOURCE = "";
     private static final String SOURCE_WITH_INVALID_TOKEN = "@";
+    private static final String SOURCE_WITH_COMMENT = "// Comment";
+    private static final String SOURCE_WITH_BLOCK_COMMENT = "/* Block \n Comment */";
     private static final String SOURCE_WITH_STRING = "\"testString\"";
     private static final String SOURCE_WITH_STRING_LITERAL = "testString";
     private static final String SOURCE_WITH_UNTERMINATED_STRING = "\"testString";
@@ -32,13 +34,37 @@ public class ScannerTest {
     }
 
     @Test
-    public void testScanTokens_WithInvalidToken() {
+    public void testScanTokens_withInvalidToken_thenReturnEOF() {
         final Scanner scanner = new Scanner(SOURCE_WITH_INVALID_TOKEN);
         final Token endOfFileToken = new Token(TokenType.EOF, "", null, 0);
         final List<Token> expectedTokens = Collections.singletonList(endOfFileToken);
 
         final List<Token> tokens = scanner.scanTokens();
 
+        assertThat(tokens).isEqualTo(expectedTokens);
+    }
+
+    @Test
+    public void testScanTokens_withComment_thenReturnEOF() {
+        final Scanner scanner = new Scanner(SOURCE_WITH_COMMENT);
+        final Token endOfFileToken = new Token(TokenType.EOF, "", null, 0);
+        final List<Token> expectedTokens = Collections.singletonList(endOfFileToken);
+
+        final List<Token> tokens = scanner.scanTokens();
+
+        assertThat(tokens).isEqualTo(expectedTokens);
+    }
+
+    @Test
+    public void testScanTokens_withBlockComment_thenReturnEOF() {
+        final Scanner scanner = new Scanner(SOURCE_WITH_BLOCK_COMMENT);
+        final Token endOfFileToken = new Token(TokenType.EOF, "", null, 1);
+        final List<Token> expectedTokens = Collections.singletonList(endOfFileToken);
+
+        final List<Token> tokens = scanner.scanTokens();
+
+        System.out.println("TEST: " + tokens);
+        System.out.println(expectedTokens);
         assertThat(tokens).isEqualTo(expectedTokens);
     }
 

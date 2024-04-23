@@ -80,5 +80,4 @@ public class Lox {
         System.out.println("[line " + line +"] Error" + where + ": " + message);
         hadError = true;
     }
-
 }
