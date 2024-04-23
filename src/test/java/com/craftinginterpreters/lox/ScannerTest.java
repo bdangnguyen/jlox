@@ -62,9 +62,7 @@ public class ScannerTest {
         final List<Token> expectedTokens = Collections.singletonList(endOfFileToken);
 
         final List<Token> tokens = scanner.scanTokens();
-
-        System.out.println("TEST: " + tokens);
-        System.out.println(expectedTokens);
+        
         assertThat(tokens).isEqualTo(expectedTokens);
     }
 
