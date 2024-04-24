@@ -16,9 +16,11 @@ class Token {
         this.line = line;
     }
 
-    /** Prints out the information related to the Token. */
+    /**
+     * Prints out information related to the Token.
+     */
     public String toString() {
-        return tokenType + " " + lexeme + " " + literal;
+        return tokenType + " " + lexeme + " " + literal + " " + line;
     }
 
     @Override
