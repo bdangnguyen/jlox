@@ -3,22 +3,12 @@ package com.craftinginterpreters.lox;
 /**
  * POJO that represents a Token in the Lox language.
  */
-class Token {
-    private final TokenType tokenType;
-    private final String lexeme;
-    private final Object literal;
-    private final int line;
-
-    Token(final TokenType tokenType,final String lexeme, final Object literal, final int line) {
-        this.tokenType = tokenType;
-        this.lexeme = lexeme;
-        this.literal = literal;
-        this.line = line;
-    }
+record Token(TokenType tokenType, String lexeme, Object literal, int line) {
 
     /**
      * Prints out information related to the Token.
      */
+    @Override
     public String toString() {
         return tokenType + " " + lexeme + " " + literal + " " + line;
     }

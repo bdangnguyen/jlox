@@ -33,18 +33,38 @@ public class GenerateAst {
     
         writer.println("package com.craftinginterpreters.lox;");
         writer.println();
-        writer.println("import java.util.List;");
-        writer.println();
         writer.println("abstract class " + baseName + " {");
+
+        // The base accept() method.
+        writer.println();
+        writer.println("    abstract <R> R accept(Visitor<R> visitor);");
+
+        // Visitor interface
+        writer.println();
+        defineVisitor(writer, baseName, types);
     
+        // AST types.
         for (final String type : types) {
             final String className = type.split(":")[0].trim();
             final String fields = type.split(":")[1].trim(); 
             defineType(writer, baseName, className, fields);
         }
-        
+
         writer.println("}");
         writer.close();
+    }
+
+    private static void defineVisitor(final PrintWriter writer, final String baseName,
+     final List<String> types) {
+        writer.println("    interface Visitor<R> {");
+
+        for (final String type : types) {
+            final String typeName = type.split(":")[0].trim();
+            writer.println("        R visit" + typeName + baseName + "(" +
+                typeName + " " + baseName.toLowerCase() + ");");
+        }
+
+        writer.println("    }");
     }
 
     private static void defineType(final PrintWriter writer, final String baseName,
@@ -68,10 +88,17 @@ public class GenerateAst {
             writer.println("            this." + name + " = " + name + ";");
         }
 
-        // Close Constructor
+        // Close constructor
         writer.println("        }");
 
-        // Define fields in abstract class.
+        // Visitor pattern
+        writer.println();
+        writer.println("        @Override");
+        writer.println("        <R> R accept(final Visitor<R> visitor) {");
+        writer.println("            return visitor.visit" + className + baseName + "(this);");
+        writer.println("        }");
+
+        // Close abstract class
         writer.println("    }");
     }
 }

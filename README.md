@@ -5,6 +5,7 @@ This is a Java 21 implementation of the Lox language in Java as described in Rob
 1. Install depedendencies and compile directly using Maven using ```mvn clean install```.
 2. Run ```java -cp .\target\lox-1.0.jar com.craftinginterpreters.lox.Lox``` to use the REPL shell.
 3. Run ```java -cp .\target\lox-1.0.jar com.craftinginterpreters.tool.GenerateAst .\src\main\java\com\craftinginterpreters\lox``` to generate the AST java class files. 
+4. To Pretty print an expression, run ```java -cp .\target\lox-1.0.jar com.craftinginterpreters.lox.AstPrinter```.
 
 Alternatively run the pom.xml using a IDE of choice.
 
